@@ -15,6 +15,12 @@ Vec3::~Vec3(){
 
 }
 
+Vec3 Vec3::zero = Vec3(0,0,0);
+
+// fixme: function call overhead
+Vec3 Vec3::normalize(){
+    return *this / length();
+}
 
 Vec3 Vec3::operator+(const Vec3 &b) const{
     return Vec3(b.x + x, b.y + y,b.z + z);
@@ -28,9 +34,17 @@ Vec3 Vec3::operator*(const float &mult) const{
     return Vec3(mult * x, mult * y,mult * z);
 }
 
+Vec3 Vec3::operator/(const float &div) const{
+    return Vec3(x / div, y / div, z / div);
+}
+
+// fixme: function call overhead?
+float Vec3::length(){
+    return Vec3::distance(zero, *this);
+}
 
 
-std::string Vec3::toString(){
+std::string Vec3::to_string(){
     return "[" + 
             std::to_string(x) + "," + 
             std::to_string(y) + "," + 

@@ -1,7 +1,7 @@
 CC = clang++
 TARGET = octTreeTest
 
-all: 
+all: space.o
 	$(CC) -std=c++11 octTreeTest.cpp space.o -o $(TARGET)
 space.o:
 	$(CC) -std=c++11 space.cpp -c
