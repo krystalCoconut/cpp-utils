@@ -14,9 +14,9 @@ class Vec3 {
     static Vec3 zero;
 
     static float distance(const Vec3 &a, const Vec3 &b){
-    return sqrt( pow((a.x - b.x),2) 
-        + pow((a.y - b.y),2) 
-        + pow((a.z - b.z),2) );
+    return std::sqrt( (a.x - b.x) * (a.x - b.x)
+                    + (a.y - b.y) * (a.y - b.y)
+                    + (a.z - b.z) * (a.z - b.z));
     }
 
     static float dot(const Vec3 &a, const Vec3 &b){
