@@ -1,4 +1,5 @@
 #include "space.h"
+#include <limits>
 
 
 Vec3::Vec3(float _x,float _y,float _z) {
@@ -16,6 +17,15 @@ Vec3::~Vec3(){
 }
 
 Vec3 Vec3::zero = Vec3(0,0,0);
+
+using std::numeric_limits;
+// Careful using these
+
+const float max = 1000;//FLT_MIN;
+const float min = -1000;//FLT_MAX;
+
+Vec3 Vec3::globalMinimum = Vec3(min, min, min);
+Vec3 Vec3::globalMaximum = Vec3(max, max, max);
 
 // fixme: function call overhead
 Vec3 Vec3::normalize(){

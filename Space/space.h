@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <cmath>
 
@@ -12,6 +13,8 @@ class Vec3 {
     ~Vec3();
 
     static Vec3 zero;
+    static Vec3 globalMinimum;
+    static Vec3 globalMaximum;
 
     static float distance(const Vec3 &a, const Vec3 &b){
     return std::sqrt( (a.x - b.x) * (a.x - b.x)
@@ -27,6 +30,13 @@ class Vec3 {
         return Vec3(a.y * b.z - a.z * b.y,
                     a.z * b.x - a.x * b.z,
                     a.x * b.y - a.y * b.x); 
+    }
+
+    static bool AABBCheck(const Vec3& point, const Vec3& lowerBounds, const Vec3& upperBounds) {
+        
+        return  lowerBounds.x <= point.x  && point.x <= upperBounds.x &&
+                lowerBounds.y <= point.y  && point.y <= upperBounds.y &&
+                lowerBounds.z <= point.z  && point.z <= upperBounds.z;
     }
 
     Vec3 operator+(const Vec3&) const;
