@@ -99,7 +99,7 @@ inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivision
                         y == 0 ? _childMidPoint.y : upperBounds.y,
                         z == 0 ? _childMidPoint.z : upperBounds.z);
 
-                    printf("\Nodes: \n \t lower: %s \t upper: %s \n", 
+                    printf("\nNodes: \n \t lower: %s \t upper: %s \n",
                         _childLowerBounds.to_string().c_str(),
                         _childUpperBounds.to_string().c_str());
 
