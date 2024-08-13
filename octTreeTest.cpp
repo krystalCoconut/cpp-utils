@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
-#include "space.h"
-#include "octTree.h"
+#include "Space/space.h"
+#include "Space/octTree.h"
 using namespace std;
 
 int main(int argc,char** argsv)

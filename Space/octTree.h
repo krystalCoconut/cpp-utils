@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdlib>
 #include <iostream>
+#include <math.h>
 #include "space.h"
 #include "../Collections/linkedlist.h"
 
@@ -10,22 +11,24 @@ class OctTree {
     public:
         OctTree<T>* nodes;
         OctTree<T>();
-        OctTree<T>(Vec3, Vec3, int);
-        ~OctTree<T>();
+        OctTree<T>(Vec3, Vec3, int, int);
+
+    ~OctTree<T>();
     private:
         int numChildren;
+        int capacity;
         LinkedList<T>* children;
         Vec3 lowerBounds,upperBounds;
     
     // Functions
     public:
         void AddChild(const Vec3&, T);
-        void RemoveChild(T);
-        void FindChild(const Vec3&, T);
+        void RemoveChild(const Vec3&, T);
         void UpdateChild(Vec3&, T);
-        void UpdateNodes();
     private:
-        int CalcChildren();
+        void Subdivide(OctTree<T> *nodes, int numDivisions);
+        void Merge(OctTree<T> *node);
+        OctTree<T> FindSector(const Vec3&, const OctTree<T>*);
         bool isNodeEmpty();
         bool CheckInBounds(Vec3);
     
@@ -34,11 +37,11 @@ class OctTree {
 // Constructors
 
 template<class T>
-inline OctTree<T>::OctTree() : OctTree(Vec3::globalMinimum, Vec3::globalMaximum, 0){
+inline OctTree<T>::OctTree() : OctTree(Vec3::globalMinimum, Vec3::globalMaximum, 0,2){
 }
 
 template<class T>
-inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivisions)
+inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivisions, int capacity = 2)
 {
     // Define the Boundaries of the OctTree Sector
     lowerBounds = _lowerBounds;
@@ -53,7 +56,14 @@ inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivision
         numDivisions--;
     
         printf("\nCreating Oct Tree\n");
-        for(int z = 0; z < 2; z++)
+        Subdivide(nodes,numDivisions);
+
+    }
+}
+
+template<class T>
+void OctTree<T>::Subdivide(OctTree<T>* nodes, int numDivisions) {
+    for(int z = 0; z < 2; z++)
             for (int y = 0; y < 2; y++)
                 for (int x = 0; x < 2; x++) {
 
@@ -64,7 +74,7 @@ inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivision
 
                     // Calculate Midpoint
                     auto calcMidPoint = [&](const Vec3& _a, const Vec3& _b) /* -> Vec3 */ {
-                        return (_lowerBounds + _upperBounds) / 2.0f;
+                        return (lowerBounds + upperBounds) / 2.0f;
                         };
 
                     // Indexes go from x:0 -> 1 y:0 -> 1 z:0 -> 1
@@ -105,6 +115,19 @@ inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivision
 
                     nodes[x + y * 2 + z * 4] = OctTree(_childLowerBounds, _childUpperBounds, numDivisions);
                 }
+}
+
+template<class T>
+void OctTree<T>::Merge(OctTree<T>* node) {
+
+    for(int i=0;i<8;i++) {
+        auto subNode = node[i];
+        if(subNode.nodes == NULL) {
+            for (auto child: subNode.children) {
+                AddChild(child);
+            }
+            delete subNode;
+        }
     }
 }
 
@@ -112,46 +135,73 @@ template<class T>
 inline OctTree<T>::~OctTree()
 {
     delete[] nodes;
+    delete[] children;
 }
 
 
 template <class T>
-void OctTree<T>::AddChild(const Vec3& position, T object)
+void OctTree<T>::AddChild(const Vec3& position, T child)
 {
+    if(numChildren >= capacity) {
 
-}
-
-
-template<class T>
-inline void OctTree<T>::RemoveChild(T)
-{
-}
-
-template<class T>
-inline void OctTree<T>::FindChild(const Vec3&, T)
-{
+    }
+    numChildren++;
+    auto sector = FindSector(position,nodes);
+    sector.children->insert(child);
 }
 
 template<class T>
-inline void OctTree<T>::UpdateChild(Vec3&, T)
+void OctTree<T>::RemoveChild(const Vec3& position, T child)
 {
+    numChildren--;
+    auto sector = FindSector(position,nodes);
 }
 
 template<class T>
-inline void OctTree<T>::UpdateNodes()
+inline OctTree<T> OctTree<T>::FindSector(const Vec3& position, const OctTree<T>* node)
 {
+    // Found the lowest possible level
+    if(isNodeEmpty()) {
+        // Check that the position is in bounds
+        if(CheckInBounds(position)) {
+            return node;
+        }
+        else {
+            printf("[octTree.h] FindSector: position is not in bounds in octTree");
+        }
+    }
+    // Still looking for a lower node
+    else {
+        // Calculate Mid point
+        Vec3 sectorCenter = (lowerBounds - upperBounds)/2.0f;
+        // Get Position relative to midpoint of Current Sector
+        Vec3 sectorDiff = position - sectorCenter;
+        // Convert relative position to sector Octant
+        Vec3 normalised = sectorDiff.normalize();
+        // Axis Clamp - rounds each axis to the nearest whole
+        // Convert from -1 1 to 0 1
+        Vec3 axisClamp = Vec3( roundf(normalised.x)/2.0f+.5f,
+            roundf(normalised.y)/2.0f+.5f, roundf(normalised.z)/2.0f+.5f);
+
+        // Sector index - x 01 y
+        int sectorIndex = axisClamp.x + axisClamp.y * 2 + axisClamp.z * 4;
+        FindSector(position, node);
+    }
+
 }
 
 template<class T>
-inline int OctTree<T>::CalcChildren()
+inline void OctTree<T>::UpdateChild(Vec3& position, T child)
 {
-    return 0;
+    RemoveChild(child);
+    AddChild(position,child);
 }
+
 
 template<class T>
 inline bool OctTree<T>::isNodeEmpty()
 {
-    return false;
+    return nodes == NULL;
 }
 
 template<class T>
