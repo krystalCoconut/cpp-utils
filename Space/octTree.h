@@ -25,7 +25,9 @@ class OctTree {
         void AddChild(const Vec3&, T);
         void RemoveChild(const Vec3&, T);
         void UpdateChild(Vec3&, T);
+
     private:
+        void UpdateChildren(LinkedList<T> *children);
         void Subdivide(OctTree<T> *nodes, int numDivisions);
         void Merge(OctTree<T> *node);
         OctTree<T> FindSector(const Vec3&, const OctTree<T>*);
@@ -122,7 +124,7 @@ void OctTree<T>::Merge(OctTree<T>* node) {
 
     for(int i=0;i<8;i++) {
         auto subNode = node[i];
-        if(subNode.nodes == NULL) {
+        if(subNode.isNodeEmpty()) {
             for (auto child: subNode.children) {
                 AddChild(child);
             }
@@ -142,12 +144,15 @@ inline OctTree<T>::~OctTree()
 template <class T>
 void OctTree<T>::AddChild(const Vec3& position, T child)
 {
-    if(numChildren >= capacity) {
-
-    }
-    numChildren++;
+    // Find node/sector to put this into
     auto sector = FindSector(position,nodes);
+    if(sector.numChildren >= capacity) {
+        Subdivide(sector);
+        sector.UpdateChildren();
+    }
+
     sector.children->insert(child);
+    numChildren++;
 }
 
 template<class T>
@@ -155,13 +160,14 @@ void OctTree<T>::RemoveChild(const Vec3& position, T child)
 {
     numChildren--;
     auto sector = FindSector(position,nodes);
+    sector.children->remove(child);
 }
 
 template<class T>
 inline OctTree<T> OctTree<T>::FindSector(const Vec3& position, const OctTree<T>* node)
 {
     // Found the lowest possible level
-    if(isNodeEmpty()) {
+    if(node.isNodeEmpty()) {
         // Check that the position is in bounds
         if(CheckInBounds(position)) {
             return node;
@@ -195,6 +201,14 @@ inline void OctTree<T>::UpdateChild(Vec3& position, T child)
 {
     RemoveChild(child);
     AddChild(position,child);
+}
+
+template<class T>
+inline void OctTree<T>::UpdateChildren(LinkedList<T>* children)
+{
+    for (auto child: children) {
+        UpdateChild();
+    }
 }
 
 
