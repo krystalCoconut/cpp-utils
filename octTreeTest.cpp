@@ -13,7 +13,7 @@ int main(int argc,char** argsv)
     string* hello = &hello_txt;
 
     string hi_txt = "hi";
-    string* hi = &hello_txt;
+    string* hi = &hi_txt;
 
     OctTree<string*> world = OctTree<string*>(
         Vec3::globalMinimum, Vec3::globalMaximum,1,2);
