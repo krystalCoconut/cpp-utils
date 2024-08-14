@@ -41,7 +41,10 @@ class OctTree {
 
     private:
         void UpdateChildren();
-        void Subdivide(OctTree<T> *nodes, int numDivisions);
+
+    std::string to_string() const;
+
+    void Subdivide(OctTree<T> *nodes, int numDivisions);
         void Merge(OctTree<T> *node);
         OctTree<T>* FindSector(const Vec3&,  OctTree<T>*);
         bool isNodeEmpty();
@@ -176,9 +179,9 @@ void OctTree<T>::AddChild(const Vec3& position, T child)
         sector->UpdateChildren();
     }
 
-// #if DEBUG
+#if DEBUG
     printf("added child: %s",position.to_string().c_str());
-// #endif
+#endif
 
     // Add the child to the collection in that sector
     sector->children.push_back(nodeChild);
@@ -190,11 +193,11 @@ void OctTree<T>::RemoveChild(const Vec3& position, T child)
 {
     bool foundChild = false;
     auto sector = FindSector(position,nodes);
-    auto sectorChildren = sector->children;
+    auto &sectorChildren = sector->children;
     for (auto iter = sectorChildren.begin();iter != sectorChildren.end();++iter) {
         if(iter->data == child) {
             foundChild = true;
-            sector->children.erase(iter);
+            sectorChildren.erase(iter);
             numChildren--;
             break;
         }
@@ -213,6 +216,9 @@ inline OctTree<T>* OctTree<T>::FindSector(const Vec3 &position,  OctTree<T> *nod
     if(node->isNodeEmpty()) {
         // Check that the position is in bounds
         if(CheckInBounds(position)) {
+#if DEBUG
+            printf("Found sector: ");
+#endif
             return node;
         }
         else {
@@ -237,7 +243,7 @@ inline OctTree<T>* OctTree<T>::FindSector(const Vec3 &position,  OctTree<T> *nod
         // Sector index - x 01 y
         int sectorIndex = axisClamp.x + axisClamp.y * 2 + axisClamp.z * 4;
 #if DEBUG
-        printf("MERGE");
+        printf("\nLooking in sector: %s\n", node[sectorIndex].to_string().c_str());
 #endif
         return FindSector(position, &node[sectorIndex]);
     }
@@ -258,7 +264,12 @@ inline void OctTree<T>::UpdateChildren()
         UpdateChild(currentChild.position,currentChild.data);
     }
 }
-
+template<class T>
+inline std::string OctTree<T>::to_string() const {
+    return "\nlowerBounds: " + lowerBounds.to_string()
+    + " upperBounds: " + upperBounds.to_string()
+    + " numChildren: " + std::to_string(numChildren);
+}
 
 template<class T>
 inline bool OctTree<T>::isNodeEmpty()
