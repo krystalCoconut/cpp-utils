@@ -9,6 +9,13 @@
 using namespace std;
 
 template <class T>
+struct OctTreeNode {
+    public:
+        T data;
+        Vec3 position;
+};
+
+template <class T>
 class OctTree {
     // Data    
     public:
