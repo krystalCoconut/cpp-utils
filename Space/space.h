@@ -43,8 +43,8 @@ class Vec3 {
     Vec3 operator-(Vec3 const&) const;
     Vec3 operator*(const float& mult) const;
     Vec3 operator/(const float& div) const;
-    float length();
-    Vec3 normalize();
+    float length() const;
+    Vec3 normalize() const;
     
-    std::string to_string();
+    std::string to_string() const;
 };
