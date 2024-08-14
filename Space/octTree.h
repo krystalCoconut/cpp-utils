@@ -82,7 +82,7 @@ inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivision
 template<class T>
 void OctTree<T>::Subdivide(OctTree<T>* nodes, int numDivisions) {
     // #if DEBUG
-    printf("Subdivide!");
+    printf("\nSubdivide!\n");
     // #endif
     for(int z = 0; z < 2; z++)
             for (int y = 0; y < 2; y++)
@@ -130,7 +130,7 @@ void OctTree<T>::Subdivide(OctTree<T>* nodes, int numDivisions) {
                         y == 0 ? _childMidPoint.y : upperBounds.y,
                         z == 0 ? _childMidPoint.z : upperBounds.z);
 
-                    printf("\nNodes: \n \t lower: %s \t upper: %s \n",
+                    printf("Nodes: \t lower: %s \t upper: %s \n",
                         _childLowerBounds.to_string().c_str(),
                         _childUpperBounds.to_string().c_str());
 
@@ -145,7 +145,7 @@ template<class T>
 void OctTree<T>::Merge(OctTree<T>* node) {
 
 #if DEBUG
-    printf("MERGE");
+    printf("\nMerge!\n");
 #endif
     for(int i=0;i<8;i++) {
         auto subNode = node[i];
@@ -180,7 +180,7 @@ void OctTree<T>::AddChild(const Vec3& position, T child)
     }
 
 #if DEBUG
-    printf("added child: %s",position.to_string().c_str());
+    printf("added child: %s to %s\n",position.to_string().c_str(),sector->to_string().c_str());
 #endif
 
     // Add the child to the collection in that sector
@@ -197,6 +197,9 @@ void OctTree<T>::RemoveChild(const Vec3& position, T child)
     for (auto iter = sectorChildren.begin();iter != sectorChildren.end();++iter) {
         if(iter->data == child) {
             foundChild = true;
+#if DEBUG
+            printf("remove child: %s\n",position.to_string().c_str());
+#endif
             sectorChildren.erase(iter);
             numChildren--;
             break;
@@ -204,7 +207,7 @@ void OctTree<T>::RemoveChild(const Vec3& position, T child)
     }
     if(!foundChild) {
         // uh oh
-        printf("[octTree.h] Did not find child in octTree!");
+        printf("[octTree.h] Did not find child in octTree!\n");
     }
 
 }
@@ -217,13 +220,13 @@ inline OctTree<T>* OctTree<T>::FindSector(const Vec3 &position,  OctTree<T> *nod
         // Check that the position is in bounds
         if(CheckInBounds(position)) {
 #if DEBUG
-            printf("Found sector: ");
+            printf("\nFound sector: %s\t",node->to_string().c_str());
 #endif
             return node;
         }
         else {
-            printf("[octTree.h] FindSector: position is not in bounds in octTree");
-            throw out_of_range("[octTree.h] FindSector: position is not in bounds in octTree");
+            printf("[octTree.h] FindSector: position is not in bounds in octTree\n");
+            throw out_of_range("[octTree.h] FindSector: position is not in bounds in octTree\n");
             return nullptr;
         }
     }
@@ -266,9 +269,9 @@ inline void OctTree<T>::UpdateChildren()
 }
 template<class T>
 inline std::string OctTree<T>::to_string() const {
-    return "\nlowerBounds: " + lowerBounds.to_string()
+    return "lowerBounds: " + lowerBounds.to_string()
     + " upperBounds: " + upperBounds.to_string()
-    + " numChildren: " + std::to_string(numChildren);
+    + " numChildren: " + std::to_string(numChildren) + "\n";
 }
 
 template<class T>
