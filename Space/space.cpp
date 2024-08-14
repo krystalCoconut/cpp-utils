@@ -28,7 +28,7 @@ Vec3 Vec3::globalMinimum = Vec3(min, min, min);
 Vec3 Vec3::globalMaximum = Vec3(max, max, max);
 
 // fixme: function call overhead
-Vec3 Vec3::normalize(){
+Vec3 Vec3::normalize() const{
     return *this / length();
 }
 
@@ -49,13 +49,13 @@ Vec3 Vec3::operator/(const float &div) const{
 }
 
 // fixme: function call overhead?
-float Vec3::length(){
+float Vec3::length() const{
     return Vec3::distance(zero, *this);
 }
 
 
-std::string Vec3::to_string(){
-    return "[" + 
+std::string Vec3::to_string() const{
+    return "[" +
             std::to_string(x) + "," + 
             std::to_string(y) + "," + 
             std::to_string(z) + "]";

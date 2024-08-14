@@ -4,7 +4,10 @@
 #include <math.h>
 #include "space.h"
 #include <unordered_set>
+#include <stdexcept>
 #include "../Collections/linkedlist.h"
+
+#define DEBUG 1
 
 using namespace std;
 
@@ -25,9 +28,9 @@ class OctTree {
 
     ~OctTree<T>();
     private:
-        int numChildren;
+        int numChildren = 0;
         int capacity;
-        unordered_set<T> children;
+        vector<OctTreeNode<T>> children;
         Vec3 lowerBounds,upperBounds;
     
     // Functions
@@ -53,13 +56,13 @@ inline OctTree<T>::OctTree() : OctTree(Vec3::globalMinimum, Vec3::globalMaximum,
 }
 
 template<class T>
-inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivisions, int capacity)
+inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivisions, int _capacity)
 {
     // Define the Boundaries of the OctTree Sector
     lowerBounds = _lowerBounds;
     upperBounds = _upperBounds;
-
-    nodes = NULL;
+    capacity = _capacity;
+    nodes = nullptr;
 
     if (numDivisions > 0)
     {
@@ -75,6 +78,9 @@ inline OctTree<T>::OctTree(Vec3 _lowerBounds, Vec3 _upperBounds, int numDivision
 
 template<class T>
 void OctTree<T>::Subdivide(OctTree<T>* nodes, int numDivisions) {
+    // #if DEBUG
+    printf("Subdivide!");
+    // #endif
     for(int z = 0; z < 2; z++)
             for (int y = 0; y < 2; y++)
                 for (int x = 0; x < 2; x++) {
@@ -125,6 +131,8 @@ void OctTree<T>::Subdivide(OctTree<T>* nodes, int numDivisions) {
                         _childLowerBounds.to_string().c_str(),
                         _childUpperBounds.to_string().c_str());
 
+
+
                     nodes[x + y * 2 + z * 4] =
                         OctTree(_childLowerBounds, _childUpperBounds, numDivisions, capacity);
                 }
@@ -133,6 +141,9 @@ void OctTree<T>::Subdivide(OctTree<T>* nodes, int numDivisions) {
 template<class T>
 void OctTree<T>::Merge(OctTree<T>* node) {
 
+#if DEBUG
+    printf("MERGE");
+#endif
     for(int i=0;i<8;i++) {
         auto subNode = node[i];
         if(subNode.isNodeEmpty()) {
@@ -154,6 +165,10 @@ inline OctTree<T>::~OctTree()
 template <class T>
 void OctTree<T>::AddChild(const Vec3& position, T child)
 {
+    OctTreeNode<T> nodeChild;
+    nodeChild.data = child;
+    nodeChild.position = position;
+
     // Find node/sector to put this into
     auto sector = FindSector(position,nodes);
     if(sector->numChildren >= capacity) {
@@ -161,16 +176,34 @@ void OctTree<T>::AddChild(const Vec3& position, T child)
         sector->UpdateChildren();
     }
 
-    sector->children.insert(child);
+// #if DEBUG
+    printf("added child: %s",position.to_string().c_str());
+// #endif
+
+    // Add the child to the collection in that sector
+    sector->children.push_back(nodeChild);
     numChildren++;
 }
 
 template<class T>
 void OctTree<T>::RemoveChild(const Vec3& position, T child)
 {
-    numChildren--;
+    bool foundChild = false;
     auto sector = FindSector(position,nodes);
-    sector->children->remove(child);
+    auto sectorChildren = sector->children;
+    for (auto iter = sectorChildren.begin();iter != sectorChildren.end();++iter) {
+        if(iter->data == child) {
+            foundChild = true;
+            sector->children.erase(iter);
+            numChildren--;
+            break;
+        }
+    }
+    if(!foundChild) {
+        // uh oh
+        printf("[octTree.h] Did not find child in octTree!");
+    }
+
 }
 
 template<class T>
@@ -184,6 +217,8 @@ inline OctTree<T>* OctTree<T>::FindSector(const Vec3 &position,  OctTree<T> *nod
         }
         else {
             printf("[octTree.h] FindSector: position is not in bounds in octTree");
+            throw out_of_range("[octTree.h] FindSector: position is not in bounds in octTree");
+            return nullptr;
         }
     }
     // Still looking for a lower node
@@ -201,6 +236,9 @@ inline OctTree<T>* OctTree<T>::FindSector(const Vec3 &position,  OctTree<T> *nod
 
         // Sector index - x 01 y
         int sectorIndex = axisClamp.x + axisClamp.y * 2 + axisClamp.z * 4;
+#if DEBUG
+        printf("MERGE");
+#endif
         return FindSector(position, &node[sectorIndex]);
     }
 
@@ -209,15 +247,15 @@ inline OctTree<T>* OctTree<T>::FindSector(const Vec3 &position,  OctTree<T> *nod
 template<class T>
 inline void OctTree<T>::UpdateChild(Vec3& position, T child)
 {
-    RemoveChild(child);
+    RemoveChild(position,child);
     AddChild(position,child);
 }
 
 template<class T>
 inline void OctTree<T>::UpdateChildren()
 {
-    for(T currentChild : children) {
-        UpdateChild(,currentChild);
+    for(OctTreeNode<T> currentChild : children) {
+        UpdateChild(currentChild.position,currentChild.data);
     }
 }
 
@@ -225,7 +263,7 @@ inline void OctTree<T>::UpdateChildren()
 template<class T>
 inline bool OctTree<T>::isNodeEmpty()
 {
-    return nodes == NULL;
+    return nodes == nullptr;
 }
 
 template<class T>

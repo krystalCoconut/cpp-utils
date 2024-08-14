@@ -12,10 +12,16 @@ int main(int argc,char** argsv)
     string hello_txt = "hello";
     string* hello = &hello_txt;
 
+    string hi_txt = "hi";
+    string* hi = &hello_txt;
+
     OctTree<string*> world = OctTree<string*>(
         Vec3::globalMinimum, Vec3::globalMaximum,1,2);
 
+    cout << a.to_string();
     world.AddChild(a,hello);
+    world.AddChild(b,hi);
+    world.RemoveChild(a,hello);
 
     
 
