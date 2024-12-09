@@ -10,11 +10,12 @@ class Node {
     Node* prev;
     Node(T);
     ~Node();
-    Node* getNext();
+    Node* getNext() { return next; }
+    const Node* getNext() const { return next; }
     T getValue();
 };
 
-template <class T>
+template <typename T>
 class LinkedList {
     public:
         Node<T>* head;
@@ -35,11 +36,6 @@ Node<T>::Node(T inValue) {
 
 template <class T>
 Node<T>::~Node() { }
-
-template <class T>
-Node<T>* Node<T>::getNext() {
-    return next;
-}
 
 template <class T>
 T Node<T>::getValue() {
