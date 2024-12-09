@@ -45,7 +45,10 @@ T Node<T>::getValue() {
 template <class T>
 LinkedList<T>::LinkedList(){}
 
+
+
 template <class T>
+[[depreciated("Use link(Node<T> a,T b) instead")]]
 void LinkedList<T>::insert(T value) {
     Node<T>* insertedNode = new Node<T>(value);
     if(head != nullptr)
