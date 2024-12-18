@@ -13,13 +13,16 @@ class Vector3 {
     ~Vector3();
 
     static Vector3 zero;
-    static Vector3 globalMinimum;
-    static Vector3 globalMaximum;
+    const static Vector3 globalMinimum;
+    const static Vector3 globalMaximum;
 
     static float distance(const Vector3 &a, const Vector3 &b){
-    return std::sqrt( (a.x - b.x) * (a.x - b.x)
-                    + (a.y - b.y) * (a.y - b.y)
-                    + (a.z - b.z) * (a.z - b.z));
+        float x_diff = std::abs(a.x - b.x);
+        float y_diff = std::abs(a.y - b.y);
+        float z_diff = std::abs(a.z - b.z);
+        return std::sqrt(x_diff * x_diff
+            + y_diff * y_diff
+            + z_diff * z_diff);
     }
 
     static float dot(const Vector3 &a, const Vector3 &b){

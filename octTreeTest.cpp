@@ -1,13 +1,14 @@
 #include <cstdlib>
 #include <iostream>
-#include "Space/space.h"
-#include "Space/octTree.h"
+#include "space/space.h"
+#include "space/octTree.h"
 using namespace std;
 
 int main(int argc,char** argsv)
 {
-    Vec3 a(1.0,2.0,3.0);
-    Vec3 b(4.0,2.0,5.0);
+    Vector3 a(1.0,2.0,3.0);
+    Vector3 b(4.0,2.0,5.0);
+    Vector3 c(-6.0, 7.0, -8.0);
     
     string hello_txt = "hello";
     string* hello = &hello_txt;
@@ -15,17 +16,20 @@ int main(int argc,char** argsv)
     string hi_txt = "hi";
     string* hi = &hi_txt;
 
+    string howdy_txt = "howdy";
+    string* howdy = &howdy_txt;
+
     OctTree<string*> world = OctTree<string*>(
-        Vec3::globalMinimum, Vec3::globalMaximum,1,2);
+        Vector3::globalMinimum, Vector3::globalMaximum,2,1);
 
-    cout << a.to_string();
-    world.AddChild(a,hello);
-    world.AddChild(b,hi);
-    world.RemoveChild(a,hello);
-
+    cout << a.toString();
+    world.addChild(a,hello);
+    world.addChild(b,hi);
+    world.removeChild(a,hello);
+    //world.addChild(c,howdy);
     
 
-    cout << a.to_string() << "\n";
-    cout << b.to_string() << "\n";
+    cout << a.toString() << "\n";
+    cout << b.toString() << "\n";
     
 }

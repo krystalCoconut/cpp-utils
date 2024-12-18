@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int main(int argi,char** argsv)
+static int test()
 {
     LinkedList<char>* charList = new LinkedList<char>();
     for(int i=0;i<32;i++) {
@@ -12,7 +12,7 @@ int main(int argi,char** argsv)
     }
 
     for(int i=0;i<32;i++) {
-        charList->remove(charList->tail);
+        charList->unlink(charList->tail);
         cout.flush();
         printAllList(charList);
     }
@@ -24,7 +24,7 @@ int main(int argi,char** argsv)
     }
 
     for(int i=0;i<32;i++) {
-        intList->remove(intList->tail);
+        intList->unlink(intList->tail);
         cout.flush();
         printAllList(intList);
     }

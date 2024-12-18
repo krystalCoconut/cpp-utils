@@ -132,14 +132,14 @@
     <ClInclude Include="Space\space.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Collections\linkedlisttest" />
     <None Include="Collections\Makefile" />
+    <None Include="Makefile" />
     <None Include="Space\Makefile" />
     <None Include="Space\octTreeTest" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Space\octTree.cpp" />
-    <ClCompile Include="Space\octTreeTest.cpp" />
+    <ClCompile Include="collections\listTest.cpp" />
+    <ClCompile Include="octTreeTest.cpp" />
     <ClCompile Include="Space\space.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

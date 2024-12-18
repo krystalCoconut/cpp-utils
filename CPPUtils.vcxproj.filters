@@ -29,16 +29,16 @@
     <None Include="Space\Makefile" />
     <None Include="Space\octTreeTest" />
     <None Include="Collections\Makefile" />
-    <None Include="Collections\linkedlisttest" />
+    <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Space\octTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Space\octTreeTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Space\space.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="collections\listTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="octTreeTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

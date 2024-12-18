@@ -1,146 +1,136 @@
 #pragma once
 #include <iostream>
+#include <cassert>
+// This warning is just me using a second argument in an assert. Thats just normal! Annoying
+#pragma warning (disable : 4002)
 
-template <class T>
+template <typename T>
 class Node {
-   
-    T value;
-    public:
-    Node* next;
-    Node* prev;
-    Node(T);
-    ~Node();
-    Node* getNext() { return next; }
-    const Node* getNext() const { return next; }
-    T getValue();
+
+	T value;
+public:
+	Node* next;
+	Node* prev;
+	Node(T);
+	~Node();
+	Node* getNext() { return next; }
+	const Node* getNext() const { return next; }
+	T getValue();
 };
 
 template <typename T>
 class LinkedList {
-    public:
-        Node<T>* head;
-        Node<T>* tail;
-        LinkedList();
-        void insert(T);
-        void pushBack(T);
-        void remove(Node<T>*);
+public:
+	Node<T>* head;
+	Node<T>* tail;
+	LinkedList();
+	void insert(T);
+	void pushBack(T);
+	void link(Node<T>*, Node<T>*);
+	void unlink(Node<T>*);
 };
 
 
-template <class T>
-Node<T>::Node(T inValue) { 
-    value = inValue;
-    next = nullptr;
-    prev = nullptr;
+template <typename T>
+Node<T>::Node(T inValue) {
+	value = inValue;
+	next = nullptr;
+	prev = nullptr;
 }
 
-template <class T>
+template <typename T>
 Node<T>::~Node() { }
 
-template <class T>
+template <typename T>
 T Node<T>::getValue() {
-    return this->value;
+	return this->value;
 }
 
-template <class T>
-LinkedList<T>::LinkedList(){}
+
+
+template <typename T>
+LinkedList<T>::LinkedList() {}
 
 
 
-template <class T>
-[[depreciated("Use link(Node<T> a,T b) instead")]]
+
+template <typename T>
+//[[depreciated("Use link(Node<T> a,T b) instead")]]
 void LinkedList<T>::insert(T value) {
-    Node<T>* insertedNode = new Node<T>(value);
-    if(head != nullptr)
-    {
-        head->prev = insertedNode;
-        insertedNode->next = head;
-        head = insertedNode;
-        
-    }
-    else
-    {
-        head = insertedNode;
-        tail = insertedNode;
-    } 
+	Node<T>* insertedNode = new Node<T>(value);
+	link(head, insertedNode);
 }
 
-template <class T>
+template <typename T>
+void LinkedList<T>::link(Node<T>* originalNode, Node<T>* newNode) {
+	assert(originalNode == nullptr, "LinkedList<T>::link : node is empty!");
+	assert(newNode == nullptr, "LinkedList<T>::link : newNode is empty!");
+
+	newNode->next = originalNode->next;
+	if (originalNode->next != nullptr) {
+		originalNode->next->prev = newNode;
+	}
+	originalNode->next = newNode;
+	newNode->prev = originalNode;
+}
+
+template <typename T>
 void LinkedList<T>::pushBack(T value) {
-    Node<T>* insertedNode = new Node<T>(value);
-    if(tail != nullptr)
-    {
-        tail->next = insertedNode;
-        insertedNode->prev = tail;
-        tail = insertedNode;
-        
-    }
-    else
-    {
-        head = insertedNode;
-        tail = insertedNode;
-    } 
+	Node<T>* insertedNode = new Node<T>(value);
+	link(tail, insertedNode);
 }
 
 
-template <class T>
-void LinkedList<T>::remove(Node<T>* nodeToRemove) {
-    if(nodeToRemove == nullptr)
-    {
-        return;
-    }
-    // two nodes (left node , prev = nullptr)
-    if(head == nodeToRemove)
-    {
-        if(head->next != nullptr)
-        {
-            head = nodeToRemove->next;
-            head->prev = nullptr;
-        }
-        else
-        {
-            head = nullptr;
-            tail = nullptr;
-        }
-        delete nodeToRemove;
+template <typename T>
+void LinkedList<T>::unlink(Node<T>* nodeToRemove) {
+	assert(nodeToRemove == nullptr, "nodeToRemove is empty!");
 
-    }        
-    else
-    // two nodes (right node, next = nullptr)
-    if(tail == nodeToRemove)
-    {
-        tail = nodeToRemove->prev;
-        tail->next = nullptr;
-        delete nodeToRemove;
-    }
-    else
-    {
-        // general case
-        if(nodeToRemove->prev != nullptr)
-            nodeToRemove->prev->next = nodeToRemove->next;
-        if(nodeToRemove->next != nullptr)
-            nodeToRemove->next->prev = nodeToRemove->prev;
-        delete nodeToRemove;
-    }
-    return;
+	// two nodes (left node , prev = nullptr)
+	if (head == nodeToRemove)
+	{
+		if (head->next != nullptr)
+		{
+			head = nodeToRemove->next;
+			head->prev = nullptr;
+		}
+		else
+		{
+			head = nullptr;
+			tail = nullptr;
+		}
+		delete nodeToRemove;
+
+	}
+	else
+		// two nodes (right node, next = nullptr)
+		if (tail == nodeToRemove)
+		{
+			tail = nodeToRemove->prev;
+			tail->next = nullptr;
+			delete nodeToRemove;
+		}
+		else
+		{
+			// general case
+			if (nodeToRemove->prev != nullptr) { nodeToRemove->prev->next = nodeToRemove->next; }
+			if (nodeToRemove->next != nullptr) { nodeToRemove->next->prev = nodeToRemove->prev; }
+			delete nodeToRemove;
+		}
 }
-template <class T>
+
+template <typename T>
 void printAllList(LinkedList<T>* list)
 {
-    if(list->head == nullptr)
-        std::cout << "list is empty\n";
+	assert(list->head == nullptr, "list is empty");
 
-    Node<T>* node = list->head;
-    if(list->head == nullptr)
-        return;
-    while(node != nullptr) {
-        std::cout << node->getValue() << ",";
-        node = node->getNext();
-       
-    }
-    std::cout << "\nHEAD: " << list->head->getValue();
-    std::cout << " TAIL: " << list->tail->getValue();
+	Node<T>* node = list->head;
+	while (node != nullptr) {
+		std::cout << node->getValue() << ",";
+		node = node->getNext();
 
-    std::cout << "\n";
+	}
+	std::cout << "\nHEAD: " << list->head->getValue();
+	std::cout << " TAIL: " << list->tail->getValue();
+	std::cout << "\n";
 }
 
