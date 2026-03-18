@@ -1,5 +1,5 @@
 CC = clang++
-TARGET = octTreeTest
+TARGET = main
 DEBUG = -g
 
 all: space.o

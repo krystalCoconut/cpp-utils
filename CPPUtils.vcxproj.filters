@@ -24,10 +24,12 @@
     <ClInclude Include="Collections\linkedlist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Space\Makefile" />
-    <None Include="Space\octTreeTest" />
     <None Include="Collections\Makefile" />
     <None Include="Makefile" />
   </ItemGroup>
@@ -38,7 +40,13 @@
     <ClCompile Include="collections\listTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="octTreeTest.cpp">
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="matrixTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testOctTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

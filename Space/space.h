@@ -1,6 +1,15 @@
 #pragma once
 #include <string>
 #include <cmath>
+#include <array>
+#include <cstdlib>
+#include <limits>
+#include <cassert>
+#include <iterator>
+
+class Vector3;
+class Quaternion;
+class Matrix4x4;
 
 class Vector3 {
     public:
@@ -46,8 +55,46 @@ class Vector3 {
     Vector3 operator-(Vector3 const&) const;
     Vector3 operator*(const float& mult) const;
     Vector3 operator/(const float& div) const;
+    Vector3 operator*(const Quaternion* rotation) const;
+
     float length() const;
     Vector3 normalize() const;
     
     std::string toString() const;
+};
+
+class Quaternion {
+public:
+    float x;
+    float y;
+    float z;
+    float w;
+
+    // Constructors
+    Quaternion(float, float, float, float);
+    Quaternion(Vector3, float);
+    Quaternion();
+    ~Quaternion();
+
+    static Quaternion identity;
+
+    Quaternion operator*(const Quaternion* multiplier) const;
+    Quaternion angleAxis(Vector3 axis, float angle);
+
+    std::string toString() const;
+};
+
+class Matrix4x4 {
+public:
+    std::array<float, 16> indices;
+
+    Matrix4x4();
+    Matrix4x4(Quaternion);
+    Matrix4x4(Vector3);
+    ~Matrix4x4();
+
+    static Matrix4x4 identity;
+
+    Matrix4x4 operator*(const Matrix4x4& rhs) const;
+    std::string toString();
 };
